@@ -1,3 +1,19 @@
+// utils
+var _listenTo = function (targetObj, eventString, callback) {
+  var self = this;
+  targetObj.bind(eventString, function () {
+    callback.call(self, arguments);
+  });
+}
+Two.Rectangle.prototype.listenTo = _listenTo;
+Two.Rectangle.prototype.size = function (width, height) {
+  this.vertices[0].set(0, 0);
+  this.vertices[1].set(width, 0);
+  this.vertices[2].set(width, -height);
+  this.vertices[3].set(0, -height);
+}
+
+// Bindings
 var two = new Two().appendTo(document.body);
 two.bind("resize", function () {
   two.width = window.innerWidth;
@@ -8,54 +24,34 @@ window.addEventListener("resize", function () {
   two.trigger("resize");
 });
 
-var _listenTo = function (targetObj, eventString, callback) {
-  var self = this;
-  targetObj.bind(eventString, function () {
-    callback.call(self, arguments);
-  });
-}
 
-Two.Rectangle.prototype.listenTo = _listenTo;
-Two.Rectangle.prototype.size = function (width, height) {
-  this.vertices[0].set(-width / 2, -height / 2);
-  this.vertices[1].set(width / 2, -height / 2);
-  this.vertices[2].set(width / 2, height / 2);
-  this.vertices[3].set(-width / 2, height / 2);
-}
-
+// Sreen quadrant
 function Quadrant() {
-  this.mask = two.makeRectangle(0, 0, two.width / 2, two.height / 2);
-  //  this.mask.clip = false;
+  this.listenTo = _listenTo;
+  this.mask = new Two.Rectangle(0, 0, two.width/2, two.height/2); // bs values overwritten later
 
-  this.mask.listenTo(two, "resize", function () {
-    this.translation.set(two.width / 4, two.height / 4);
-    this.size(two.width / 4, two.height / 4);
+  this.listenTo(two, "resize", function () {
+    this.mask.size(two.width / 2, two.height / 2);
+    this.group.translation.set(two.width / 2, two.height / 2);
   });
-  this.group = two.makeGroup(this.mask);
 
-  //  var self = this;
-  //  two.on("resize", function () {
-  //
-  //    self.group.translation.x = two.width / 2;
-  //    self.group.translation.y = two.height / 2;
-  //  });
+  this.group = two.makeGroup(this.mask);
+  // The translation should correspond to the origin of this quadrant
+
+//  this.group.mask = this.mask;
+
+  this.add = function(){
+    this.group.add.apply(this.arguments);
+    this.group.center();
+  }
 }
 
 var q1 = new Quadrant();
-//var q2 = new Quadrant();
-//q2.group.
 
-//var rect = two.makeRectangle(0, 0, 128, 128);
-//rect.fill = "white";
-//rect.noStroke();
-//
-//var mask = two.makeRectangle(0, 0, 128, 64);
-//
-//var group = two.makeGroup(rect, mask);
-//group.translation.x = two.width / 2;
-//group.translation.y = two.height / 2;
-//
-//group.mask = mask;
+var rect = new Two.Rectangle(0, 0, 128, 128);
+rect.fill = "red";
+rect.noStroke();
+q1.group.add(rect);
 
 two.trigger("resize");
 two.play();
