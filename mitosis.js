@@ -38,7 +38,7 @@ function Quadrant() {
   this.group = two.makeGroup(this.mask);
   // The translation should correspond to the origin of this quadrant
 
-//  this.group.mask = this.mask;
+  this.group.mask = this.mask;
 
   this.add = function(){
     this.group.add.apply(this.arguments);
