@@ -52,7 +52,7 @@ var Surface = function Surface() {
   Two.Path.call(this, points);
 
   this.symmetries = []; // an index of all quadrants that should contain mirrors of this path
-  this.velocity = new Two.Vector(3, 3);
+  this.velocity = new Two.Vector(1, 1);
   this.scale = new Two.Vector(1, 1);
 
   this.addTo = function (quadrant) {
@@ -64,6 +64,7 @@ var Surface = function Surface() {
 
   var oldUpdate = this._update;
   this._update = function () {
+    this.velocity.multiplyScalar(1.01);
     if (this.velocity.x !== 0 || this.velocity.y !== 0)
       this.translation.addSelf(this.velocity);
     oldUpdate.apply(this, arguments);
@@ -87,7 +88,7 @@ var Surface = function Surface() {
 //  console.log(speedPercent);
 //  var speed = .5 + 4.5 * speedPercent;
   var inverseVariance = new Two.Vector(1 - variance.x, 1 - variance.y);
-  var speed = inverseVariance.multiplyScalar(5);
+  var speed = inverseVariance;
   console.log(speed.length());
   var direction = Math.random()*Math.PI/2;
   this.velocity.set(Math.cos(direction)*speed.x, Math.sin(direction)*speed.y);
