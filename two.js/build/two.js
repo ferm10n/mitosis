@@ -2332,7 +2332,6 @@ this.Two = (function(previousTwo) {
   _.extend(Vector.prototype, Two.Utils.Events, {
 
     set: function(x, y) {
-      console.log(arguments);
       this.x = x;
       this.y = y;
       return this;
@@ -4032,7 +4031,6 @@ this.Two = (function(previousTwo) {
     path: {
 
       render: function(domElement) {
-
         this._update();
 
         // Shortcut for hidden objects.
