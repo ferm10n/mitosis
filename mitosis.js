@@ -53,6 +53,7 @@ var Surface = function Surface() {
 
   this.symmentries = []; // an index of all quadrants that should contain mirrors of this path
   this.velocity = new Two.Vector(0, 0);
+  this.scale = new Two.Vector(16,16);
 
   this.addTo = function (quadrant) {
     var symPath = this.symmentries.length === 0 ? this : this.clone();
@@ -67,6 +68,22 @@ var Surface = function Surface() {
       this.translation.addSelf(this.velocity);
     oldUpdate.apply(this, arguments);
   }
+
+
+  // visual defaults
+  this.scale.set(Math.random(), Math.random())
+    .multiplyScalar(256)
+    .addSelf(new Two.Vector(128,128));
+  var bounds = this.getBoundingClientRect();
+  this.translation.set(-bounds.width/2, -bounds.height/2);
+  this.fill = "rgb("+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+")";
+  this.velocity.set(2,2);
+  this.rotation = Math.PI*Math.random();
+  this.noStroke();
+  this.addTo(q1);
+  this.addTo(q2);
+  this.addTo(q3);
+  this.addTo(q4);
 };
 Surface.prototype = Object.create(Two.Path.prototype);
 
@@ -82,14 +99,6 @@ q4.scale = new Two.Vector(1, -1);
 
 // Surface setup
 var rect = new Surface();
-rect.scale = 256;
-rect.translation.set(-128, -128);
-rect.fill = "red";
-rect.noStroke();
-rect.addTo(q1);
-rect.addTo(q2);
-rect.addTo(q3);
-rect.addTo(q4);
 
 // kickoff
 two.trigger("resize");
