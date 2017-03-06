@@ -1,4 +1,6 @@
-(function(Two, _, Backbone, requestAnimationFrame) {
+(function(Two) {
+
+  var _ = Two.Utils;
 
   var Vector = Two.Vector = function(x, y) {
 
@@ -13,7 +15,7 @@
 
   });
 
-  _.extend(Vector.prototype, Backbone.Events, {
+  _.extend(Vector.prototype, Two.Utils.Events, {
 
     set: function(x, y) {
       this.x = x;
@@ -273,6 +275,7 @@
   };
 
   var xgs = {
+    enumerable: true,
     get: function() {
       return this._x;
     },
@@ -283,6 +286,7 @@
   };
 
   var ygs = {
+    enumerable: true,
     get: function() {
       return this._y;
     },
@@ -309,15 +313,10 @@
       this._bound = true; // Reserved for event initialization check
     }
 
-    Backbone.Events.bind.apply(this, arguments);
+    Two.Utils.Events.bind.apply(this, arguments);
 
     return this;
 
   };
 
-})(
-  this.Two,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('underscore') : this._,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('backbone') : this.Backbone,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('requestAnimationFrame') : this.requestAnimationFrame
-);
+})(this.Two);

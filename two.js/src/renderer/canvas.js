@@ -1,10 +1,11 @@
-(function(Two, _, Backbone, requestAnimationFrame) {
+(function(Two) {
 
   /**
    * Constants
    */
   var mod = Two.Utils.mod, toFixed = Two.Utils.toFixed;
   var getRatio = Two.Utils.getRatio;
+  var _ = Two.Utils;
 
   // Returns true if this is a non-transforming matrix
   var isDefaultMatrix = function (m) {
@@ -19,6 +20,12 @@
       left: 'start',
       middle: 'center',
       right: 'end'
+    },
+
+    shim: function(elem) {
+      elem.tagName = 'canvas';
+      elem.nodeType = 1;
+      return elem;
     },
 
     group: {
@@ -186,8 +193,8 @@
 
               a = commands[prev];
               c = commands[next];
-              ar = (a.controls && a.controls.right) || a;
-              bl = (b.controls && b.controls.left) || b;
+              ar = (a.controls && a.controls.right) || Two.Vector.zero;
+              bl = (b.controls && b.controls.left) || Two.Vector.zero;
 
               if (a._relative) {
                 vx = (ar.x + toFixed(a._x));
@@ -211,8 +218,8 @@
 
                 c = d;
 
-                br = (b.controls && b.controls.right) || b;
-                cl = (c.controls && c.controls.left) || c;
+                br = (b.controls && b.controls.right) || Two.Vector.zero;
+                cl = (c.controls && c.controls.left) || Two.Vector.zero;
 
                 if (b._relative) {
                   vx = (br.x + toFixed(b._x));
@@ -428,11 +435,9 @@
     this.ctx = this.domElement.getContext('2d');
     this.overdraw = params.overdraw || false;
 
-    this.ctx.imageSmoothingEnabled = smoothing;
-    this.ctx.mozImageSmoothingEnabled = smoothing;
-    this.ctx.oImageSmoothingEnabled = smoothing;
-    this.ctx.webkitImageSmoothingEnabled = smoothing;
-    this.ctx.imageSmoothingEnabled = smoothing;
+    if (!_.isUndefined(this.ctx.imageSmoothingEnabled)) {
+      this.ctx.imageSmoothingEnabled = smoothing;
+    }
 
     // Everything drawn on the canvas needs to be added to the scene.
     this.scene = new Two.Group();
@@ -446,7 +451,7 @@
 
   });
 
-  _.extend(Renderer.prototype, Backbone.Events, {
+  _.extend(Renderer.prototype, Two.Utils.Events, {
 
     setSize: function(width, height, ratio) {
 
@@ -458,10 +463,12 @@
       this.domElement.width = width * this.ratio;
       this.domElement.height = height * this.ratio;
 
-      _.extend(this.domElement.style, {
-        width: width + 'px',
-        height: height + 'px'
-      });
+      if (this.domElement.style) {
+        _.extend(this.domElement.style, {
+          width: width + 'px',
+          height: height + 'px'
+        });
+      }
 
       return this;
 
@@ -496,9 +503,4 @@
     ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
 
-})(
-  this.Two,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('underscore') : this._,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('backbone') : this.Backbone,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('requestAnimationFrame') : this.requestAnimationFrame
-);
+})(this.Two);

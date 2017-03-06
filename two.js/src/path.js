@@ -1,4 +1,4 @@
-(function(Two, _, Backbone, requestAnimationFrame) {
+(function(Two) {
 
   /**
    * Constants
@@ -8,6 +8,7 @@
     getComputedMatrix = Two.Utils.getComputedMatrix;
 
   var commands = {};
+  var _ = Two.Utils;
 
   _.each(Two.Commands, function(v, k) {
     commands[k] = new RegExp(v);
@@ -77,22 +78,7 @@
 
       // Only the first 8 properties are flagged like this. The subsequent
       // properties behave differently and need to be hand written.
-      _.each(Path.Properties.slice(0, 8), function(property) {
-
-        var secret = '_' + property;
-        var flag = '_flag' + property.charAt(0).toUpperCase() + property.slice(1);
-
-        Object.defineProperty(object, property, {
-          get: function() {
-            return this[secret];
-          },
-          set: function(v) {
-            this[secret] = v;
-            this[flag] = true;
-          }
-        });
-
-      });
+      _.each(Path.Properties.slice(0, 8), Two.Utils.defineProperty, object);
 
       Object.defineProperty(object, 'length', {
         get: function() {
@@ -104,6 +90,7 @@
       });
 
       Object.defineProperty(object, 'closed', {
+        enumerable: true,
         get: function() {
           return this._closed;
         },
@@ -114,6 +101,7 @@
       });
 
       Object.defineProperty(object, 'curved', {
+        enumerable: true,
         get: function() {
           return this._curved;
         },
@@ -124,6 +112,7 @@
       });
 
       Object.defineProperty(object, 'automatic', {
+        enumerable: true,
         get: function() {
           return this._automatic;
         },
@@ -140,6 +129,7 @@
       });
 
       Object.defineProperty(object, 'beginning', {
+        enumerable: true,
         get: function() {
           return this._beginning;
         },
@@ -150,6 +140,7 @@
       });
 
       Object.defineProperty(object, 'ending', {
+        enumerable: true,
         get: function() {
           return this._ending;
         },
@@ -160,6 +151,8 @@
       });
 
       Object.defineProperty(object, 'vertices', {
+
+        enumerable: true,
 
         get: function() {
           return this._collection;
@@ -212,6 +205,7 @@
       });
 
       Object.defineProperty(object, 'clip', {
+        enumerable: true,
         get: function() {
           return this._clip;
         },
@@ -397,6 +391,18 @@
 
       border = this.linewidth / 2;
       l = this._vertices.length;
+
+      if (l <= 0) {
+        v = matrix.multiply(0, 0, 1);
+        return {
+          top: v.y,
+          left: v.x,
+          right: v.x,
+          bottom: v.y,
+          width: 0,
+          height: 0
+        };
+      }
 
       for (i = 0; i < l; i++) {
         v = this._vertices[i];
@@ -735,9 +741,4 @@
 
   }
 
-})(
-  this.Two,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('underscore') : this._,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('backbone') : this.Backbone,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('requestAnimationFrame') : this.requestAnimationFrame
-);
+})(this.Two);

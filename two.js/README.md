@@ -68,9 +68,26 @@ grunt build-uglify
 instead to minify the build with uglify.
 
 ## Change Log
-For the latest nightly changes checkout the `dev` branch [here](../../tree/dev).
+<!-- For the latest nightly changes checkout the `dev` branch [here](../../tree/dev). -->
+
+#### Nightly
++ Enhanced `Two.Shape.scale` to allow both numbers and `Two.Vector` as property value
++ Made `Two.interpret` use latest primitives
++ Added `Two.Circle` primitive
++ `Two.Shape.translation` is now a getter/setter and can be replaced
++ Fixed translation interpretation to strip out `'px'` strings
++ Removed `Two.SineRing` — make `Two.Star.curved = true` and it's the same effect
++ Enhanced `Two.ArcSegment`, `Two.Ellipse`, `Two.Polygon`, `Two.Rectangle`, `Two.RoundedRectangle`, `Two.Star`
++ Fixed `Two.Anchor.relative` interpretation in `svg`, `canvas`, and `webgl` renderers
++ Made Getters / Setters enumerable for iteration compatibility
++ Fixed Two.Utils.Collection.splice method and added additional test
++ Added compatibility with [node.js](http://nodejs.org/), [browserify](http://browserify.org), and [node-canvas](https://github.com/Automattic/node-canvas)
++ Removed third party dependencies
++ Added `remove` method to `Two.Text`
++ Fixed ordering on same parent additions for `Two.Group`
 
 ##### February 9, 2016 [v0.6.0](https://github.com/jonobr1/two.js/releases/tag/v0.6.0)
++ Updated `Two.CanvasRenderer.ctx.imageSmoothingEnabled` to not use deprecated invokation, [issue 178](https://github.com/jonobr1/two.js/issues/178)
 + Fixed `Two.Group.mask` in `SVGRenderer` to append to DOM correctly
 + Updated `require` imports to be compatible with [require.js](http://requirejs.org/)
 + Added `Two.Text` for programmatically writing text in Two.js

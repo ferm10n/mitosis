@@ -1,8 +1,10 @@
-(function(Two, _, Backbone, requestAnimationFrame) {
+(function(Two) {
 
+  var root = this;
   var getComputedMatrix = Two.Utils.getComputedMatrix;
+  var _ = Two.Utils;
 
-  var canvas = document.createElement('canvas');
+  var canvas = (root.document ? root.document.createElement('canvas') : { getContext: _.identity });
   var ctx = canvas.getContext('2d');
 
   Two.Text = function(message, x, y, styles) {
@@ -46,24 +48,10 @@
 
       Two.Shape.MakeObservable(object);
 
-      _.each(Two.Text.Properties, function(property) {
-
-        var secret = '_' + property;
-        var flag = '_flag' + property.charAt(0).toUpperCase() + property.slice(1);
-
-        Object.defineProperty(object, property, {
-          get: function() {
-            return this[secret];
-          },
-          set: function(v) {
-            this[secret] = v;
-            this[flag] = true;
-          }
-        });
-
-      });
+      _.each(Two.Text.Properties, Two.Utils.defineProperty, object);
 
       Object.defineProperty(object, 'clip', {
+        enumerable: true,
         get: function() {
           return this._clip;
         },
@@ -119,6 +107,18 @@
     _visible: true,
 
     _clip: false,
+
+    remove: function() {
+
+      if (!this.parent) {
+        return this;
+      }
+
+      this.parent.remove(this);
+
+      return this;
+
+    },
 
     clone: function(parent) {
 
@@ -212,9 +212,4 @@
 
   Two.Text.MakeObservable(Two.Text.prototype);
 
-})(
-  Two,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('underscore') : _,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('backbone') : Backbone,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('requestAnimationFrame') : requestAnimationFrame
-);
+})(this.Two);

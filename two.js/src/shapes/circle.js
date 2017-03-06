@@ -3,11 +3,7 @@
   var Path = Two.Path, TWO_PI = Math.PI * 2, cos = Math.cos, sin = Math.sin;
   var _ = Two.Utils;
 
-  var Ellipse = Two.Ellipse = function(ox, oy, rx, ry) {
-
-    if (!_.isNumber(ry)) {
-      ry = rx;
-    }
+  var Circle = Two.Circle = function(ox, oy, r) {
 
     var amount = Two.Resolution;
 
@@ -17,43 +13,39 @@
 
     Path.call(this, points, true, true);
 
-    this.width = rx * 2;
-    this.height = ry * 2;
+    this.radius = r;
 
     this._update();
     this.translation.set(ox, oy);
 
   };
 
-  _.extend(Ellipse, {
+  _.extend(Circle, {
 
-    Properties: ['width', 'height'],
+    Properties: ['radius'],
 
     MakeObservable: function(obj) {
 
       Path.MakeObservable(obj);
-      _.each(Ellipse.Properties, Two.Utils.defineProperty, obj);
+      _.each(Circle.Properties, Two.Utils.defineProperty, obj);
 
     }
 
   });
 
-  _.extend(Ellipse.prototype, Path.prototype, {
+  _.extend(Circle.prototype, Path.prototype, {
 
-    _width: 0,
-    _height: 0,
-
-    _flagWidth: false,
-    _flagHeight: false,
+    _radius: 0,
+    _flagRadius: false,
 
     _update: function() {
 
-      if (this._flagWidth || this._flagHeight) {
+      if (this._flagRadius) {
         for (var i = 0, l = this.vertices.length; i < l; i++) {
           var pct = i / l;
           var theta = pct * TWO_PI;
-          var x = this._width * cos(theta) / 2;
-          var y = this._height * sin(theta) / 2;
+          var x = this._radius * cos(theta);
+          var y = this._radius * sin(theta);
           this.vertices[i].set(x, y);
         }
       }
@@ -65,7 +57,7 @@
 
     flagReset: function() {
 
-      this._flagWidth = this._flagHeight = false;
+      this._flagRadius = false;
 
       Path.prototype.flagReset.call(this);
       return this;
@@ -74,6 +66,6 @@
 
   });
 
-  Ellipse.MakeObservable(Ellipse.prototype);
+  Circle.MakeObservable(Circle.prototype);
 
 })(this.Two);

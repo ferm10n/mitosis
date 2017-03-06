@@ -1,7 +1,8 @@
-(function(Two, _, Backbone, requestAnimationFrame) {
+(function(Two) {
 
   // Localized variables
   var commands = Two.Commands;
+  var _ = Two.Utils;
 
   /**
    * An object that holds 3 `Two.Vector`s, the anchor point and its
@@ -110,11 +111,18 @@
         };
       }
       return o;
+    },
+
+    toString: function() {
+      return [this._x, this._y, this.controls.left.x, this.controls.left.y,
+        this.controls.right.x, this.controls.right.y].join(', ');
     }
 
   };
 
   Object.defineProperty(Anchor.prototype, 'command', {
+
+    enumerable: true,
 
     get: function() {
       return this._command;
@@ -131,6 +139,8 @@
   });
 
   Object.defineProperty(Anchor.prototype, 'relative', {
+
+    enumerable: true,
 
     get: function() {
       return this._relative;
@@ -160,9 +170,4 @@
     _.extend(this, AnchorProto);
   };
 
-})(
-  this.Two,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('underscore') : this._,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('backbone') : this.Backbone,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('requestAnimationFrame') : this.requestAnimationFrame
-);
+})(this.Two);

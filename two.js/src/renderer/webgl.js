@@ -1,22 +1,24 @@
-(function(Two, _, Backbone, requestAnimationFrame) {
+(function(Two) {
 
   /**
    * Constants
    */
 
-  var multiplyMatrix = Two.Matrix.Multiply,
+  var root = this,
+    multiplyMatrix = Two.Matrix.Multiply,
     mod = Two.Utils.mod,
     identity = [1, 0, 0, 0, 1, 0, 0, 0, 1],
     transformation = new Two.Array(9),
     getRatio = Two.Utils.getRatio,
     getComputedMatrix = Two.Utils.getComputedMatrix,
-    toFixed = Two.Utils.toFixed;
+    toFixed = Two.Utils.toFixed,
+    _ = Two.Utils;
 
   var webgl = {
 
     isHidden: /(none|transparent)/i,
 
-    canvas: document.createElement('canvas'),
+    canvas: (root.document ? root.document.createElement('canvas') : { getContext: _.identity }),
 
     alignments: {
       left: 'start',
@@ -222,8 +224,8 @@
 
               a = commands[prev];
               c = commands[next];
-              ar = (a.controls && a.controls.right) || a;
-              bl = (b.controls && b.controls.left) || b;
+              ar = (a.controls && a.controls.right) || Two.Vector.zero;
+              bl = (b.controls && b.controls.left) || Two.Vector.zero;
 
               if (a._relative) {
                 vx = toFixed((ar.x + a._x));
@@ -247,8 +249,8 @@
 
                 c = d;
 
-                br = (b.controls && b.controls.right) || b;
-                cl = (c.controls && c.controls.left) || c;
+                br = (b.controls && b.controls.right) || Two.Vector.zero;
+                cl = (c.controls && c.controls.left) || Two.Vector.zero;
 
                 if (b._relative) {
                   vx = toFixed((br.x + b._x));
@@ -994,7 +996,7 @@
 
   });
 
-  _.extend(Renderer.prototype, Backbone.Events, {
+  _.extend(Renderer.prototype, Two.Utils.Events, {
 
     setSize: function(width, height, ratio) {
 
@@ -1046,9 +1048,4 @@
 
   });
 
-})(
-  this.Two,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('underscore') : this._,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('backbone') : this.Backbone,
-  typeof require === 'function' && !(typeof define === 'function' && define.amd) ? require('requestAnimationFrame') : this.requestAnimationFrame
-);
+})(this.Two);

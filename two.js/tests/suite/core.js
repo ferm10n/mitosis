@@ -6,6 +6,112 @@
 
 module('Core');
 
+test('Two.Utils', 11 * 11 + 18, function() {
+
+  var types = {
+    arguments: arguments,
+    number: 1,
+    nan: NaN,
+    null: null,
+    func: Two.Utils.identity,
+    obj: {},
+    array: [],
+    elem: document.createElement('div'),
+    date: new Date(),
+    regex: new RegExp(),
+    bool: false
+  };
+  var funcs = {
+    arguments: Two.Utils.isArguments,
+    number: Two.Utils.isNumber,
+    nan: Two.Utils.isNaN,
+    null: Two.Utils.isNull,
+    'undefined': Two.Utils.isUndefined,
+    func: Two.Utils.isFunction,
+    obj: Two.Utils.isObject,
+    array: Two.Utils.isArray,
+    elem: Two.Utils.isElement,
+    date: Two.Utils.isDate,
+    regex: Two.Utils.isRegExp,
+    bool: Two.Utils.isBoolean
+  };
+  var exceptions = {
+    numbernan: true,
+    objfunc: true,
+    objarray: true,
+    objelem: true,
+    objdate: true,
+    objregex: true
+  };
+  var keys = ['number', 'nan', 'null', 'undefined', 'func', 'obj',
+    'array', 'elem', 'date', 'regex', 'bool'];
+
+  for (var i = 0; i < keys.length; i++) {
+    var a = keys[i];
+    var func = funcs[a];
+    for (var j = 0; j < keys.length; j++) {
+      var b = keys[j];
+      var type = types[b];
+      equal(func(type), exceptions[a + b] || i === j, keys[i] + ' is ' + keys[j]);
+    }
+  }
+
+  equal(Two.Utils.identity(5), 5, 'identity returns passed value.');
+  equal(Two.Utils.isArray(Two.Utils.toArray({})), true, 'turned {} to array.');
+  equal(JSON.stringify(Two.Utils.range(0, 5)), '[0,1,2,3,4]', 'created 0-5 range successfully.');
+  equal(Two.Utils.indexOf(['a', 'b', 'c'], 'b'), 1, 'indexed correctly.');
+  equal(Two.Utils.has({ hello: 'foo' }, 'hello'), true, 'Object has property.');
+  equal(Two.Utils.bind(function() {
+    return this.attr;
+  }, { attr: 'Two.js' })(), 'Two.js', 'Bound function properly.');
+  equal(JSON.stringify(Two.Utils.extend({ a: 'b' }, { a: 'a', b: 'c' })), '{"a":"a","b":"c"}', 'Object extends properties successfully.');
+  equal(JSON.stringify(Two.Utils.defaults({ a: 'b' }, { a: 'a', b: 'c' })), '{"a":"b","b":"c"}', 'Object defaults properties successfully.')
+  equal(JSON.stringify(Two.Utils.keys({ a: 0, b: 1, c: 2 })), '["a","b","c"]', 'Two.Utils.keys successfully retrieves keys.');
+  equal(JSON.stringify(Two.Utils.values({ a: 0, b: 1, c: 2 })), '[0,1,2]', 'Two.Utils.values successfully retrieves keys.');
+
+  var obj = { a: 0, b: 1, c: 2, d: 3 };
+  Two.Utils.each(obj, function(v, k) {
+    equal(v, obj[k], 'Two.Utils.each');
+  });
+  var map = Two.Utils.map(obj, function(v, k) {
+    return k;
+  });
+  equal(JSON.stringify(map), '["a","b","c","d"]', 'Two.Utils.map');
+
+  var once = Two.Utils.once(function() {
+    equal(true, true, 'This test should only run once.');
+  });
+  var after = Two.Utils.after(5, function() {
+    equal(true, true, 'This test should only run after 5 invocations.');
+  });
+
+  var i = 0;
+  while (i < 5) {
+    once();
+    after();
+    i++;
+  }
+
+  equal(Two.Utils.uniqueId('hello-'), 'hello-1', 'uniqueId is unique-ish with proper prefixing.');
+
+});
+
+test('Two.Utils.Events', 1, function() {
+
+  var Item = function() {};
+  Two.Utils.extend(Item.prototype, Two.Utils.Events);
+
+  var item = new Item();
+
+  item.bind('change', function(message) {
+    equal(message, 'hello', 'Bound Two.Utils.Events successfully.');
+  });
+  item.trigger('change', 'hello');
+  item.unbind('change');
+  item.trigger('change');
+
+});
+
 test('Two.Vector', 44, function() {
 
   var vector = new Two.Vector();
@@ -303,7 +409,7 @@ test('Two.Matrix', 10, function() {
 
 });
 
-test('Two.Utils.Collection', 12, function() {
+test('Two.Utils.Collection', 14, function() {
 
   var poly = new Two.Path([new Two.Vector(0, 0)]);
   var vector = new Two.Vector(150, 150);
@@ -344,12 +450,72 @@ test('Two.Utils.Collection', 12, function() {
   equal(vertices.length, 5, 'Two.Utils.Collection.push adds several items to the end of vertices collection');
 
   removed = vertices.splice(2, 1, vector);
-  equal(vertices.length, 5, 'Two.Utils.Collection.slice adds and removes items from the vertices collection');
-  equal(removed[0].equals(new Two.Vector(2, 2)), true, 'Two.Utils.Collection.slice remove the correct items from the vertices collection');
-  equal(vertices[2].equals(vector), true, 'Two.Utils.Collection.slice insertes correct item to the middle of the vertices collection');
+  equal(vertices.length, 5, 'Two.Utils.Collection.splice adds and removes items from the vertices collection');
+  equal(removed[0].equals(new Two.Vector(2, 2)), true, 'Two.Utils.Collection.splice remove the correct items from the vertices collection');
+  equal(vertices[2].equals(vector), true, 'Two.Utils.Collection.splice inserts correct item to the middle of the vertices collection');
+
+  var a = new Two.Utils.Collection('a', 'b', 'c', 'd', 'e');
+  equal(a.slice(1, 2)[0], 'b', 'Two.Utils.Collection.slice does correct beginning / end index selection.');
+
+  a.splice(0, 0, 'z');
+
+  equal(a[0], 'z', 'Two.Utils.Collection.splice correctly inserts properties.');
 
 });
 
+test('Two.Shape', 11, function() {
+
+  var shape = new Two.Shape();
+  equal(shape.translation.toString(), '0,0', 'Two.Shape.translation constructed properly.');
+  equal(shape.scale, 1, 'Two.Shape.scale constructed properly.');
+  equal(shape.rotation, 0, 'Two.Shape.rotation constructed properly.');
+
+  shape.translation.x = 50;
+  shape.translation.y = 25;
+  shape._update();
+
+  equal(shape._matrix.toString(), '1 0 0 1 50 25', 'Two.Shape.translation binds properly.');
+
+  shape.translation = new Two.Vector(25, 50);
+  shape._update();
+
+  equal(shape._matrix.toString(), '1 0 0 1 25 50', 'Two.Shape.translation binds properly.');
+
+  shape.translation.x = 0;
+  shape.translation.y = 0;
+  shape._update();
+
+  equal(shape._matrix.toString(), '1 0 0 1 0 0', 'Two.Shape.translation binds properly.');
+
+  shape.scale = 3;
+  shape._update();
+
+  equal(shape._matrix.toString(), '3 0 0 3 0 0', 'Two.Shape.scale uniform scale works properly.');
+
+  shape.scale = new Two.Vector(1, 2);
+  shape._update();
+
+  equal(shape._matrix.toString(), '1 0 0 2 0 0', 'Two.Shape.scale 2 dimension scale works properly.');
+
+  shape.scale.x = 2;
+  shape.scale.y = 1;
+  shape._update();
+
+  equal(shape._matrix.toString(), '2 0 0 1 0 0', 'Two.Shape.scale 2 dimension scale binds properly for event listening.');
+
+  var s = shape.scale;
+  shape.scale = 10;
+  s.x = 5;
+  shape._update();
+
+  equal(shape._matrix.toString(), '10 0 0 10 0 0', 'Two.Shape.scale 2 dimension scale unbinds properly.');
+
+  shape.rotation = 3.14;
+  shape._update();
+
+  equal(shape._matrix.toString(), '-10 0.016 -0.016 -10 0 0', 'Two.Shape.rotation works properly.');
+
+});
 
 test('Children adding and removing', 28, function() {
 
