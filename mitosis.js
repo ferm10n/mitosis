@@ -51,14 +51,14 @@ var Surface = function Surface() {
   }
   Two.Path.call(this, points);
 
-  this.symmentries = []; // an index of all quadrants that should contain mirrors of this path
-  this.velocity = new Two.Vector(0, 0);
-  this.scale = new Two.Vector(16,16);
+  this.symmetries = []; // an index of all quadrants that should contain mirrors of this path
+  this.velocity = new Two.Vector(3, 3);
+  this.scale = new Two.Vector(1, 1);
 
   this.addTo = function (quadrant) {
-    var symPath = this.symmentries.length === 0 ? this : this.clone();
+    var symPath = this.symmetries.length === 0 ? this : this.clone();
     symPath.translation = this.translation;
-    this.symmentries.push(symPath);
+    this.symmetries.push(symPath);
     quadrant.add(symPath);
   }
 
@@ -71,15 +71,31 @@ var Surface = function Surface() {
 
 
   // visual defaults
-  this.scale.set(Math.random(), Math.random())
-    .multiplyScalar(256)
-    .addSelf(new Two.Vector(128,128));
+  this.scale.set(two.width/2, two.height/2);
+  var variance = new Two.Vector(Math.random(),Math.random()).normalize();
+  variance.multiplyScalar(0.9); // max
+  variance.addSelf(new Two.Vector(0.1, 0.1)); // min
+  this.scale.multiplySelf(variance);
+  this.rotation = Math.PI/2 * Math.random();
   var bounds = this.getBoundingClientRect();
-  this.translation.set(-bounds.width/2, -bounds.height/2);
-  this.fill = "rgb("+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+","+Math.floor(Math.random()*255)+")";
-  this.velocity.set(2,2);
-  this.rotation = Math.PI*Math.random();
+  console.log(bounds);
+  this.translation.set(-this.scale.x/2, -this.scale.y/2);
+
+  this.fill = "rgba(" + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + ",.5)";
+
+//  var speedPercent = Math.sqrt(bounds.width * bounds.width + bounds.height * bounds.height) / Math.sqrt(two.width * two.width + two.height * two.height);
+//  console.log(speedPercent);
+//  var speed = .5 + 4.5 * speedPercent;
+  var inverseVariance = new Two.Vector(1 - variance.x, 1 - variance.y);
+  var speed = inverseVariance.multiplyScalar(5);
+  console.log(speed.length());
+  var direction = Math.random()*Math.PI/2;
+  this.velocity.set(Math.cos(direction)*speed.x, Math.sin(direction)*speed.y);
+//  this.velocity.addSelf(new Two.Vector(1,1));
+
+
   this.noStroke();
+
   this.addTo(q1);
   this.addTo(q2);
   this.addTo(q3);
