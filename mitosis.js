@@ -41,6 +41,8 @@ Quadrant.prototype = Object.create(Two.Group.prototype);
 
 var Surface = function Surface() {
   // Default coords and super constructor
+  surfaces.push(this);
+  this.dead = false;
   var points = arguments;
 
   var variance = new Two.Vector(Math.random(), Math.random());
@@ -63,7 +65,7 @@ var Surface = function Surface() {
   points.forEach(function(point){
     point = point.rotate(rotation);
   });
-  var rotationSpeed = Math.random()*.01 -.005;
+  var rotationSpeed = Math.random()*.002 -.001;
   Two.Path.call(this, points);
 
   this.symmetries = []; // an index of all quadrants that should contain mirrors of this path
@@ -81,19 +83,24 @@ var Surface = function Surface() {
   this.update = function(){
     self.velocity.multiplyScalar(1.005);
     if (self.velocity.x !== 0 || self.velocity.y !== 0)
-      self.translation.addSelf(self.velocity);
+      self.translation.addSelf(self.velocity.clone().multiplyScalar(boost));
 
     var bounds = self.getBoundingClientRect();
     if(bounds.left > two.width || bounds.top > two.height)
       self.remove();
 
     self.symmetries.forEach(function(symmetry){
-      symmetry.rotation+=rotationSpeed;
+      symmetry.rotation+=rotationSpeed*boost;
     });
   }
 
   this._update();
   this.listenTo(two, Two.Events.update, this.update);
+
+  this.die = function(){
+    this.dead = true;
+    this.remove();
+  }
 
   // override
   this.remove = function(){
@@ -101,9 +108,11 @@ var Surface = function Surface() {
       symmetry.parent.remove(symmetry);
     });
     this.stopListening(two, Two.Events.update, this.update);
-    setTimeout(function(){
-      new Surface();
-    }, 1000*Math.random());
+
+    if(!this.dead)
+      setTimeout(function(){
+        new Surface();
+      }, 1000*Math.random());
   }
 
   // visual defaults
@@ -120,7 +129,7 @@ var Surface = function Surface() {
   this.linewidth = 1+9*Math.random();
 
   var inverseVariance = new Two.Vector(1 - variance.x, 1 - variance.y);
-  var speed = inverseVariance.multiplyScalar(.2).length();
+  var speed = inverseVariance.multiplyScalar(.1).length();
   var direction = Math.random()*Math.PI/2;
   this.velocity.set(Math.cos(direction)*speed, Math.sin(direction)*speed);
 
@@ -137,6 +146,12 @@ var Surface = function Surface() {
 };
 Surface.prototype = Object.create(Two.Path.prototype);
 
+var boost = 1,
+    targetBoost = 1;
+two.on("update", function(){
+  boost += (targetBoost-boost)*.1;
+  console.log(surfaces);
+});
 
 // Quadrant setup
 var q1 = new Quadrant();
@@ -148,7 +163,30 @@ q3.scale = new Two.Vector(-1, -1);
 q4.scale = new Two.Vector(1, -1);
 
 // Surface setup
+var surfaces = [];
 var rect = new Surface();
+
+// UI control
+addEventListener("touchstart", function(ev){
+  targetBoost = 8;
+  surfaceControl(ev.touches[0].clientY);
+});
+addEventListener("mousedown", function(ev){
+  targetBoost = 8;
+  surfaceControl(ev.clientY);
+});
+addEventListener("touchend", function(){
+  targetBoost = 1;
+});
+addEventListener("mouseup", function(){
+  targetBoost = 1;
+});
+function surfaceControl(y) {
+  if(y > two.height*.75)
+    surfaces.shift().die();
+  else if(y < two.height*.25)
+    new Surface();
+}
 
 // kickoff
 two.trigger("resize");

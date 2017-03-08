@@ -1786,9 +1786,12 @@ this.Two = (function(previousTwo) {
             var ev = function () {
               callback.apply(bound, arguments);
             };
+
+            // add references about the object that assigned this listener
             ev.obj = obj;
             ev.name = name;
             ev.callback = callback;
+
             obj.on(name, ev);
           }
 
@@ -2462,10 +2465,10 @@ this.Two = (function(previousTwo) {
       return { x: this.x, y: this.y };
     },
 
-    rotate: function(radians) {
-      var newX = this.x*Math.cos(radians) - this.y*Math.sin(radians);
-      var newY = this.x*Math.sin(radians) + this.y*Math.cos(radians);
-      this.set(newX,newY);
+    rotate: function (radians) {
+      var newX = this.x * Math.cos(radians) - this.y * Math.sin(radians);
+      var newY = this.x * Math.sin(radians) + this.y * Math.cos(radians);
+      this.set(newX, newY);
       return this;
     }
 
@@ -5961,8 +5964,9 @@ this.Two = (function(previousTwo) {
       clone.rotation = this.rotation;
       clone.scale = this.scale;
 
-      if(parent)
+      if (parent) {
         parent.add(clone);
+      }
 
       return clone;
 
@@ -7389,8 +7393,9 @@ this.Two = (function(previousTwo) {
         clone[property] = this[property];
       }, this);
 
-      if(parent)
+      if (parent) {
         parent.add(clone);
+      }
 
       return clone;
 
@@ -7755,8 +7760,9 @@ this.Two = (function(previousTwo) {
         clone[k] = this[k];
       }, this);
 
-      if(parent)
+      if (parent) {
         parent.add(clone);
+      }
 
       return clone;
 
@@ -7866,8 +7872,9 @@ this.Two = (function(previousTwo) {
         clone[k] = this[k];
       }, this);
 
-      if(parent)
+      if (parent) {
         parent.add(clone);
+      }
 
       return clone;
 
@@ -8159,8 +8166,9 @@ this.Two = (function(previousTwo) {
       group.rotation = this.rotation;
       group.scale = this.scale;
 
-      if(parent)
+      if (parent) {
         parent.add(group);
+      }
 
       return group;
 
