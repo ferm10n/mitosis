@@ -46,26 +46,26 @@ var Surface = function Surface() {
   var points = arguments;
 
   var variance = new Two.Vector(Math.random(), Math.random());
-  variance.multiplyScalar(.9).addSelf(new Two.Vector(.1,.1));
+  variance.multiplyScalar(.9).addSelf(new Two.Vector(.1, .1));
 
-  var scale = variance.clone().multiplyScalar(Math.max(two.width*.7, two.height*.7));
+  var scale = variance.clone().multiplyScalar(Math.max(two.width * .7, two.height * .7));
 
   // default shape
   if (points.length === 0) {
     points = [
-      new Two.Anchor(-scale.x/2, -scale.y/2),
-      new Two.Anchor(scale.x/2, -scale.y/2),
-      new Two.Anchor(scale.x/2, scale.y/2),
-      new Two.Anchor(-scale.x/2, scale.y/2)
+      new Two.Anchor(-scale.x / 2, -scale.y / 2),
+      new Two.Anchor(scale.x / 2, -scale.y / 2),
+      new Two.Anchor(scale.x / 2, scale.y / 2),
+      new Two.Anchor(-scale.x / 2, scale.y / 2)
     ];
   }
 
   // rotate object
-  var rotation = Math.random()*Math.PI/2;
-  points.forEach(function(point){
+  var rotation = Math.random() * Math.PI / 2;
+  points.forEach(function (point) {
     point = point.rotate(rotation);
   });
-  var rotationSpeed = Math.random()*.002 -.001;
+  var rotationSpeed = Math.random() * .002 - .001;
   Two.Path.call(this, points);
 
   this.symmetries = []; // an index of all quadrants that should contain mirrors of this path
@@ -80,62 +80,64 @@ var Surface = function Surface() {
   }
 
   var self = this;
-  this.update = function(){
+  this.update = function () {
     self.velocity.multiplyScalar(1.005);
     if (self.velocity.x !== 0 || self.velocity.y !== 0)
       self.translation.addSelf(self.velocity.clone().multiplyScalar(boost));
 
     var bounds = self.getBoundingClientRect();
-    if(bounds.left > two.width || bounds.top > two.height)
+    if (bounds.left > two.width || bounds.top > two.height)
       self.remove();
 
-    self.symmetries.forEach(function(symmetry){
-      symmetry.rotation+=rotationSpeed*boost;
+    self.symmetries.forEach(function (symmetry) {
+      symmetry.rotation += rotationSpeed * boost;
     });
   }
 
   this._update();
   this.listenTo(two, Two.Events.update, this.update);
 
-  this.die = function(){
+  this.die = function () {
     this.dead = true;
     this.remove();
   }
 
   // override
-  this.remove = function(){
-    this.symmetries.forEach(function(symmetry){
+  this.remove = function () {
+    this.symmetries.forEach(function (symmetry) {
       symmetry.parent.remove(symmetry);
     });
     this.stopListening(two, Two.Events.update, this.update);
+    surfaces.splice(surfaces.indexOf(this), 1);
 
-    if(!this.dead)
-      setTimeout(function(){
+    var self = this;
+    setTimeout(function () {
+      if (!self.dead)
         new Surface();
-      }, 1000*Math.random());
+    }, 1000 * Math.random());
   }
 
   // visual defaults
   var bounds = this.getBoundingClientRect();
-  this.translation.set(-bounds.width/2, -bounds.height/2);
-  if(Math.random() > .5){
-    this.translation.addSelf(new Two.Vector(Math.random()*two.width/2,0));
+  this.translation.set(-bounds.width / 2, -bounds.height / 2);
+  if (Math.random() > .5) {
+    this.translation.addSelf(new Two.Vector(Math.random() * two.width / 2, 0));
   } else {
-    this.translation.addSelf(new Two.Vector(0,Math.random()*two.height/2));
+    this.translation.addSelf(new Two.Vector(0, Math.random() * two.height / 2));
   }
 
   this.fill = "rgba(" + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + ",.5)";
   this.stroke = this.fill;
-  this.linewidth = 1+9*Math.random();
+  this.linewidth = 1 + 9 * Math.random();
 
   var inverseVariance = new Two.Vector(1 - variance.x, 1 - variance.y);
   var speed = inverseVariance.multiplyScalar(.1).length();
-  var direction = Math.random()*Math.PI/2;
-  this.velocity.set(Math.cos(direction)*speed, Math.sin(direction)*speed);
+  var direction = Math.random() * Math.PI / 2;
+  this.velocity.set(Math.cos(direction) * speed, Math.sin(direction) * speed);
 
-  if(Math.random()>.5){
+  if (Math.random() > .5) {
     this.noStroke();
-  }else{
+  } else {
     this.noFill();
   }
 
@@ -147,10 +149,9 @@ var Surface = function Surface() {
 Surface.prototype = Object.create(Two.Path.prototype);
 
 var boost = 1,
-    targetBoost = 1;
-two.on("update", function(){
-  boost += (targetBoost-boost)*.1;
-  console.log(surfaces);
+  targetBoost = 1;
+two.on("update", function () {
+  boost += (targetBoost - boost) * .1;
 });
 
 // Quadrant setup
@@ -167,24 +168,25 @@ var surfaces = [];
 var rect = new Surface();
 
 // UI control
-addEventListener("touchstart", function(ev){
+addEventListener("touchstart", function (ev) {
   targetBoost = 8;
   surfaceControl(ev.touches[0].clientY);
 });
-addEventListener("mousedown", function(ev){
+addEventListener("mousedown", function (ev) {
   targetBoost = 8;
   surfaceControl(ev.clientY);
 });
-addEventListener("touchend", function(){
+addEventListener("touchend", function () {
   targetBoost = 1;
 });
-addEventListener("mouseup", function(){
+addEventListener("mouseup", function () {
   targetBoost = 1;
 });
+
 function surfaceControl(y) {
-  if(y > two.height*.75)
-    surfaces.shift().die();
-  else if(y < two.height*.25)
+  if (y > two.height * .75)
+    surfaces[0].die();
+  else if (y < two.height * .25)
     new Surface();
 }
 
