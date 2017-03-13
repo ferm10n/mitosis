@@ -1,5 +1,5 @@
 # mitosis
-**Infinitely evolving abstract art built from four symmetrical viewports.**
+**Infinitely evolving abstract art built from randomly generated geometry.**
 
 It's basically just a clever way of mirroring rectangles and randomly changing their properties.
 Originally this was an idea for a music visualizer thingy, maybe I'll make it more responsive and interactive.
