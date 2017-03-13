@@ -165,7 +165,7 @@ q4.scale = new Two.Vector(1, -1);
 
 // Surface setup
 var surfaces = [];
-var initialCount = 15; // parseInt(location.search.replace("?",""));
+var initialCount = 25; // parseInt(location.search.replace("?",""));
 for(var i = 0; i < initialCount; i++)
   var rect = new Surface();
 
