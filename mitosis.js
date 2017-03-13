@@ -165,7 +165,9 @@ q4.scale = new Two.Vector(1, -1);
 
 // Surface setup
 var surfaces = [];
-var rect = new Surface();
+var initialCount = parseInt(location.search.replace("?",""));
+for(var i = 0; i < initialCount; i++)
+  var rect = new Surface();
 
 // UI control
 addEventListener("touchstart", function (ev) {
