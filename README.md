@@ -1,9 +1,12 @@
 # mitosis
-Just an idea for a music visualizer thingy. ~~Yay webgl!~~ _anything_
+**Infinitely evolving abstract art built from four symmetrical viewports.**
+
+It's basically just a clever way of mirroring rectangles and randomly changing their properties.
+Originally this was an idea for a music visualizer thingy, maybe I'll make it more responsive and interactive.
 
 View it live: https://ferm10n.github.io/mitosis/ 
 
 ##CONTROLS:
-- touch/click upper quarter of screen to add surfaces
-- touch/click lower quater to remove them
-- touch/click anywhere to pulse and accelerate the scene
+- push the upper quarter of the screen to add surfaces
+- push the lower quater to remove them
+- push anywhere to pulse and accelerate the scene
