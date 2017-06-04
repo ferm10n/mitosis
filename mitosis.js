@@ -4,7 +4,9 @@
 var largestDimension = Math.max(window.innerHeight, window.innerWidth)
 
 // Bindings
-var two = new Two().appendTo(document.body);
+var two = new Two({
+  type: Two.Types.canvas
+}).appendTo(document.body);
 two.on("resize", function () {
   two.width = window.innerWidth;
   two.height = window.innerHeight;
