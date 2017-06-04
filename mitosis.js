@@ -1,6 +1,22 @@
 /* es-lint env:browser */
 /* globals Two */
 
+// utils
+function getLargestDimension () {
+  return Math.max(window.innerHeight, window.innerWidth)
+}
+function surfaceControl (y) { // checks if a surface should be added or removed on a touch/click input
+  if (y > two.height * 1.75) {
+    surfaces[0].dead = true
+    surfaces[0].remove()
+  } else if (y < two.height * 0.25) surfaces.push(new Surface())
+}
+function makeTwo () {
+  return new Two({
+    type: Two.Types.canvas
+  })
+}
+
 // Shared vars
 var largestDimension = getLargestDimension()
 var minBoost = 1 + 2 * (1 - (largestDimension / 2000))
@@ -9,26 +25,33 @@ var boost = minBoost
 var targetBoost = boost
 var surfaces = []
 var initialCount = 25
+var quadrants = [makeTwo(), makeTwo(), makeTwo(), makeTwo()]
+var two = quadrants[3]
 
 // Event bindings
-var two = new Two({
-  type: Two.Types.canvas
-}).appendTo(document.body)
 two.on('resize', function () {
-  two.width = window.innerWidth
-  two.height = window.innerHeight
+  quadrants.forEach(function (quadrant) {
+    quadrant.width = window.innerWidth/2
+    quadrant.height = window.innerHeight/2
+  })
+  quadrants.forEach(function (quadrant) {
+    quadrant.update()
+  })
   largestDimension = getLargestDimension()
 })
 window.addEventListener('resize', function () {
   two.trigger('resize')
-  two.update()
 })
 two.on('update', function () {
   minBoost = 1 + 2 * (1 - (largestDimension / 2000))
   maxBoost = 8 + minBoost
   boost += (targetBoost - boost) * 0.2
-//  var quad = two.renderer.ctx.getImageData(two.width/2, two.height/2, two.width/2, two.height/2)
-//  two.renderer.ctx.putImageData(quad, 0, 0)
+})
+two.on('render', function () {
+  var img = two.renderer.ctx.getImageData(0, 0, two.width, two.height)
+  quadrants[0].renderer.ctx.putImageData(img, 0,0)
+  quadrants[1].renderer.ctx.putImageData(img, 0,0)
+  quadrants[2].renderer.ctx.putImageData(img, 0,0)
 })
 // UI control
 window.addEventListener('touchstart', function (ev) {
@@ -46,48 +69,12 @@ window.addEventListener('mouseup', function () {
   targetBoost = minBoost
 })
 
-// utils
-function getLargestDimension () {
-  return Math.max(window.innerHeight, window.innerWidth)
-}
-function surfaceControl (y) { // checks if a surface should be added or removed on a touch/click input
-  if (y > two.height * 0.75) {
-    surfaces[0].dead = true
-    surfaces[0].remove()
-  } else if (y < two.height * 0.25) surfaces.push(new Surface())
-}
-
-// Sreen quadrant
-var Quadrant = function Quadrant () {
-  Two.Group.apply(this, arguments) // inherit constructor
-  two.add(this)
-  this.mask = new Two.Path([
-    new Two.Anchor(),
-    new Two.Anchor(),
-    new Two.Anchor(),
-    new Two.Anchor()
-  ])
-
-  this.listenTo(two, 'resize', function () {
-    this.translation.set(two.width / 2, two.height / 2)
-  })
-  this.mask.listenTo(two, 'resize', function () {
-    this.vertices[0].set(0, 0)
-    this.vertices[1].set(two.width / 2, 0)
-    this.vertices[2].set(two.width / 2, two.height / 2)
-    this.vertices[3].set(0, two.height / 2)
-  })
-  this.add(this.mask)
-}
-Quadrant.prototype = Object.create(Two.Group.prototype)
-
 // basic shape
 var Surface = function Surface () {
   // Default coords and super constructor
   this.dead = false
   var points = arguments
   var self = this
-  this.symmetries = [] // an index of all quadrants that should contain mirrors of this path
 
   // geometry stuff
   var variance = new Two.Vector(Math.random(), Math.random())
@@ -144,7 +131,7 @@ var Surface = function Surface () {
     }
 
     var bounds = self.getBoundingClientRect()
-    if (bounds.left > two.width || bounds.top > two.height) { self.remove() }
+    if (bounds.left > two.width*2 || bounds.top > two.height*2) { self.remove() }
 
     // color stuff
     if (Math.random() < 0.005 || !self.targetRed) {
@@ -158,13 +145,6 @@ var Surface = function Surface () {
     self.blue += (self.targetBlue - self.blue) * transitionFactor
     self.fill = 'rgba(' + Math.floor(self.red * 255) + ',' + Math.floor(self.green * 255) + ',' + Math.floor(self.blue * 255) + ',.5)'
     self.stroke = self.fill
-
-    // update symmetries
-    self.symmetries.forEach(function (symmetry) {
-      symmetry.rotation += rotationSpeed * boost
-      symmetry.fill = self.fill
-      symmetry.stroke = self.stroke
-    })
   }
 
   this._update()
@@ -172,35 +152,24 @@ var Surface = function Surface () {
 
   // override
   this.remove = function () {
-    this.symmetries.forEach(function (symmetry) {
-      symmetry.parent.remove(symmetry)
-    })
-    this.stopListening(two, Two.Events.update, this.update)
-    surfaces.splice(surfaces.indexOf(this), 1)
+    two.remove(self)
+    self.stopListening(two, Two.Events.update, self.update)
+    surfaces.splice(surfaces.indexOf(self), 1)
 
     setTimeout(function () {
       if (!self.dead) { surfaces.push(new Surface()) }
     }, 1000 * Math.random())
   }
 
-  // create symmetries
-  quadrants.forEach(function (quadrant) {
-    var symPath = self.symmetries.length === 0 ? self : self.clone()
-    symPath.rotation = self.rotation
-    symPath.translation = self.translation
-    self.symmetries.push(symPath)
-    quadrant.add(symPath)
-  })
+  two.add(self)
 }
 Surface.prototype = Object.create(Two.Path.prototype)
 
-// Quadrant setup
-var quadrants = [new Quadrant(), new Quadrant(), new Quadrant(), new Quadrant()]
-quadrants[1].scale = new Two.Vector(-1, 1)
-quadrants[2].scale = new Two.Vector(-1, -1)
-quadrants[3].scale = new Two.Vector(1, -1)
-
 // kickoff
 for (var i = 0; i < initialCount; i++) surfaces.push(new Surface())
+for (var i = 0; i < quadrants.length; i++) {
+  quadrants[i].renderer.domElement = document.getElementById('q'+(i + 1))
+  quadrants[i].renderer.ctx = quadrants[i].renderer.domElement.getContext('2d')
+}
 two.trigger('resize')
 two.play()

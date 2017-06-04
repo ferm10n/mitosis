@@ -11,8 +11,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <style>
     body,
-    html,
-    canvas {
+    html {
       padding: 0;
       margin: 0;
       position: absolute;
@@ -21,10 +20,13 @@
       top: 0px;
       bottom: 0px;
       overflow: hidden;
+      background-color: black;
+      z-index:-2;
     }
     canvas {
-      background-color: black;
       z-index:-1;
+      position: absolute;
+      background-color: black;
     }
     .noselect {
       -webkit-touch-callout: none; /* iOS Safari */
@@ -46,6 +48,21 @@
       right:0;
       left:initial;
     }
+    #q1 {
+      right:1px;
+      transform: scaleY(-1);
+    }
+    #q2 {
+      transform: scaleY(-1) scaleX(-1);
+    }
+    #q3 {
+      transform: scaleX(-1);
+      bottom:1px;
+    }
+    #q4 {
+      right:1px;
+      bottom:1px;
+    }
   </style>
   <script type="text/javascript" src="two.js/build/two.js"></script>
 </head>
@@ -54,6 +71,11 @@
   <a href='https://twitter.com/ferm10n'>OMG MOARR</a>
   <!-- Place this tag where you want the button to render. -->
   <a class="github-button" href="https://github.com/ferm10n" aria-label="Follow @ferm10n on GitHub">Follow @ferm10n</a>
+  
+  <canvas class='noselect' id="q1"></canvas>
+  <canvas class='noselect' id="q2"></canvas>
+  <canvas class='noselect' id="q3"></canvas>
+  <canvas class='noselect' id="q4"></canvas>
   <script type="text/javascript" src="mitosis.js"></script>
 </body>
 
