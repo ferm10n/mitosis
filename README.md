@@ -6,7 +6,7 @@ Originally this was an idea for a music visualizer thingy, maybe I'll make it mo
 
 View it live: https://ferm10n.github.io/mitosis/ 
 
-##CONTROLS:
+## CONTROLS:
 - push the upper quarter of the screen to add surfaces
 - push the lower quater to remove them
 - push anywhere to pulse and accelerate the scene
