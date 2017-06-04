@@ -86,7 +86,7 @@ var Surface = function Surface() {
 
   var self = this;
   this.update = function () {
-    self.velocity.multiplyScalar(1.005);
+    self.velocity.multiplyScalar(1.005+.01*((boost-minBoost)/(maxBoost-minBoost)));
     if (self.velocity.x !== 0 || self.velocity.y !== 0)
       self.translation.addSelf(self.velocity.clone().multiplyScalar(boost));
 
@@ -153,14 +153,14 @@ var Surface = function Surface() {
 };
 Surface.prototype = Object.create(Two.Path.prototype);
 
-var boost = 1;
-var targetBoost = boost;
 var minBoost = 1+2*(1-(largestDimension/2000));
-var minBoost = 1;
+var maxBoost = minBoost*8;
+var boost = minBoost;
+var targetBoost = boost;
 two.on("update", function () {
   minBoost = 1+2*(1-(largestDimension/2000));
   maxBoost = 8+minBoost;
-  boost += (targetBoost - boost) * .1;
+  boost += (targetBoost - boost) * .2;
 });
 
 // Quadrant setup
