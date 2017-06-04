@@ -24,7 +24,7 @@ var maxBoost = minBoost * 8
 var boost = minBoost
 var targetBoost = boost
 var surfaces = []
-var initialCount = 25
+var initialCount = 35
 var quadrants = [makeTwo(), makeTwo(), makeTwo(), makeTwo()]
 var two = quadrants[3]
 
