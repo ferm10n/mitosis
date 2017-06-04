@@ -1,11 +1,14 @@
 // jshint browser:true
 /* globals Two */
 
+var largestDimension = Math.max(window.innerHeight, window.innerWidth)
+
 // Bindings
 var two = new Two().appendTo(document.body);
 two.on("resize", function () {
   two.width = window.innerWidth;
   two.height = window.innerHeight;
+  largestDimension = Math.max(window.innerWidth, window.innerWidth)
 });
 window.addEventListener("resize", function () {
   two.trigger("resize");
@@ -148,9 +151,13 @@ var Surface = function Surface() {
 };
 Surface.prototype = Object.create(Two.Path.prototype);
 
-var boost = 1,
-  targetBoost = 1;
+var boost = 1;
+var targetBoost = boost;
+var minBoost = 1+2*(1-(largestDimension/2000));
+var minBoost = 1;
 two.on("update", function () {
+  minBoost = 1+2*(1-(largestDimension/2000));
+  maxBoost = 8+minBoost;
   boost += (targetBoost - boost) * .1;
 });
 
@@ -171,18 +178,18 @@ for(var i = 0; i < initialCount; i++)
 
 // UI control
 addEventListener("touchstart", function (ev) {
-  targetBoost = 8;
+  targetBoost = maxBoost;
   surfaceControl(ev.touches[0].clientY);
 });
 addEventListener("mousedown", function (ev) {
-  targetBoost = 8;
+  targetBoost = maxBoost;
   surfaceControl(ev.clientY);
 });
 addEventListener("touchend", function () {
-  targetBoost = 1;
+  targetBoost = minBoost;
 });
 addEventListener("mouseup", function () {
-  targetBoost = 1;
+  targetBoost = minBoost;
 });
 
 function surfaceControl(y) {
