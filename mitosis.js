@@ -48,7 +48,7 @@ two.on('update', function () {
   boost += (targetBoost - boost) * 0.2
 })
 two.on('render', function () {
-  var img = two.renderer.ctx.getImageData(0, 0, two.width, two.height)
+  var img = two.renderer.ctx.getImageData(0, 0, two.width*2, two.height*2)
   quadrants[0].renderer.ctx.putImageData(img, 0,0)
   quadrants[1].renderer.ctx.putImageData(img, 0,0)
   quadrants[2].renderer.ctx.putImageData(img, 0,0)
