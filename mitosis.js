@@ -49,6 +49,7 @@ var Surface = function Surface() {
   surfaces.push(this);
   this.dead = false;
   var points = arguments;
+  var self = this;
 
   var variance = new Two.Vector(Math.random(), Math.random());
   variance.multiplyScalar(.9).addSelf(new Two.Vector(.1, .1));
@@ -83,8 +84,13 @@ var Surface = function Surface() {
     this.symmetries.push(symPath);
     quadrant.add(symPath);
   }
+  
+  this.selectColors = function () {
+    self.targetRed = Math.random()
+    self.targetGreen = Math.random()
+    self.targetBlue = Math.random()
+  }
 
-  var self = this;
   this.update = function () {
     self.velocity.multiplyScalar(1.005+.01*((boost-minBoost)/(maxBoost-minBoost)));
     if (self.velocity.x !== 0 || self.velocity.y !== 0)
@@ -94,8 +100,21 @@ var Surface = function Surface() {
     if (bounds.left > two.width || bounds.top > two.height)
       self.remove();
 
+    if(Math.random()<.005){
+      self.selectColors()
+    }
+    
+    var transitionFactor = .05
+    self.red += (self.targetRed - self.red)*transitionFactor
+    self.green += (self.targetGreen - self.green)*transitionFactor
+    self.blue += (self.targetBlue - self.blue)*transitionFactor
+    self.fill = "rgba(" + Math.floor(self.red * 255) + "," + Math.floor(self.green * 255) + "," + Math.floor(self.blue * 255) + ",.5)";
+    self.stroke = self.fill;
+    
     self.symmetries.forEach(function (symmetry) {
       symmetry.rotation += rotationSpeed * boost;
+      symmetry.fill = self.fill
+      symmetry.stroke = self.stroke
     });
   }
 
@@ -131,7 +150,11 @@ var Surface = function Surface() {
     this.translation.addSelf(new Two.Vector(0, Math.random() * two.height / 2));
   }
 
-  this.fill = "rgba(" + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + "," + Math.floor(Math.random() * 255) + ",.5)";
+  this.selectColors()
+  this.red = this.targetRed
+  this.green = this.targetGreen
+  this.blue = this.targetBlue
+  this.fill = "rgba(" + Math.floor(this.red * 255) + "," + Math.floor(this.green * 255) + "," + Math.floor(this.blue * 255) + ",.5)";
   this.stroke = this.fill;
   this.linewidth = 1 + 9 * Math.random();
 
