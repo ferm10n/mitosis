@@ -134,12 +134,12 @@ var Surface = function Surface () {
     if (bounds.left > two.width*2 || bounds.top > two.height*2) { self.remove() }
 
     // color stuff
-    if (Math.random() < 0.005 || !self.targetRed) {
+    if (Math.random() < 0.001 || !self.targetRed) {
       self.targetRed = Math.random()
       self.targetGreen = Math.random()
       self.targetBlue = Math.random()
     }
-    var transitionFactor = 0.05
+    var transitionFactor = 0.01
     self.red += (self.targetRed - self.red) * transitionFactor
     self.green += (self.targetGreen - self.green) * transitionFactor
     self.blue += (self.targetBlue - self.blue) * transitionFactor
