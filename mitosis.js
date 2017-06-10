@@ -177,4 +177,4 @@ two.play()
 document.addEventListener('ontouchmove', function (e) {
   e.preventDefault()
   return false
-}
+})
