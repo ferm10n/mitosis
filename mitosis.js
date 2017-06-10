@@ -174,3 +174,9 @@ for (var i = 0; i < quadrants.length; i++) {
 two.trigger('resize')
 two.play()
 
+$(function(){
+	var sh = $('body').height()
+	$('canvas').height((sh/2))
+	$('#q3,#q4').css('top', (sh/2)+'px')
+})
+
