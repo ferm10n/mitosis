@@ -173,3 +173,8 @@ for (var i = 0; i < quadrants.length; i++) {
 }
 two.trigger('resize')
 two.play()
+
+window.addEventListener('ontouchmove', function (e) {
+  e.preventDefault()
+  return false
+}
