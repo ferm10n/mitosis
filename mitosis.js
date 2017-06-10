@@ -180,3 +180,8 @@ $(function(){
 	$('#q3,#q4').css('top', (sh/2)+'px')
 })
 
+document.addEventListener('ontouchmove', function (e) {
+  e.preventDefault()
+  return false
+})
+
