@@ -174,3 +174,7 @@ for (var i = 0; i < quadrants.length; i++) {
 two.trigger('resize')
 two.play()
 
+document.addEventListener('ontouchmove', function (e) {
+  e.preventDefault()
+  return false
+}
