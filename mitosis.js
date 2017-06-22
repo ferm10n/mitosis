@@ -30,6 +30,9 @@ var two = quadrants[3]
 
 // Event bindings
 two.on('resize', function () {
+  var sh = $('body').height()
+  $('canvas').height((sh/2))
+  $('#q3,#q4').css('top', (sh/2)+'px')
   quadrants.forEach(function (quadrant) {
     quadrant.width = window.innerWidth/2
     quadrant.height = window.innerHeight/2
@@ -173,14 +176,6 @@ for (var i = 0; i < quadrants.length; i++) {
 }
 two.trigger('resize')
 two.play()
-
-$(function(){
-	var sh = $('body').height()
-	//$('canvas').height((sh/2))
-	$('canvas').height(64)
-	//$('#q3,#q4').css('top', (sh/2)+'px')
-	$('#q3,#q4').css('top', 64+'px')
-})
 
 document.addEventListener('ontouchmove', function (e) {
   e.preventDefault()
