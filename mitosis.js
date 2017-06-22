@@ -176,8 +176,10 @@ two.play()
 
 $(function(){
 	var sh = $('body').height()
-	$('canvas').height((sh/2))
-	$('#q3,#q4').css('top', (sh/2)+'px')
+	//$('canvas').height((sh/2))
+	$('canvas').height(64)
+	//$('#q3,#q4').css('top', (sh/2)+'px')
+	$('#q3,#q4').css('top', 64+'px')
 })
 
 document.addEventListener('ontouchmove', function (e) {
