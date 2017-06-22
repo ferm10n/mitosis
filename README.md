@@ -1,6 +1,6 @@
 # mitosis
 **Infinitely evolving abstract art built from randomly generated geometry.**
-<img src="https://raw.githubusercontent.com/ferm10n/mitosis/master/snap.png" alt="alt text">
+[<img src="https://raw.githubusercontent.com/ferm10n/mitosis/master/snap.png" alt="alt text">](https://ferm10n.github.io/mitosis/)
 
 It's basically just a clever way of mirroring rectangles and randomly changing their properties.
 Originally this was an idea for a music visualizer thingy, maybe I'll make it more responsive and interactive.
