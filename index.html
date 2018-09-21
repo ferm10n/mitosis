@@ -38,7 +38,7 @@
                 user-select: none; /* Non-prefixed version, currently
                                       supported by Chrome and Opera */
     }
-    iframe, a {
+    iframe, a, #github-button-container {
       color:#333;
       position:absolute;
       bottom:0;
@@ -67,9 +67,11 @@
 </head>
 
 <body class='noselect'>
-  <a href='https://twitter.com/ferm10n'>OMG MOARR</a>
-  <!-- Place this tag where you want the button to render. -->
-  <a class="github-button" href="https://github.com/ferm10n" aria-label="Follow @ferm10n on GitHub">Follow @ferm10n</a>
+  <div id="github-button-area">
+    <a href='https://twitter.com/ferm10n'>OMG MOARR</a>
+    <!-- Place this tag where you want the button to render. -->
+    <a class="github-button" href="https://github.com/ferm10n" aria-label="Follow @ferm10n on GitHub">Follow @ferm10n</a>
+  </div>
   
   <canvas class='noselect' id="q1"></canvas>
   <canvas class='noselect' id="q2"></canvas>
